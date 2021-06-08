@@ -25,7 +25,7 @@ class Product(models.Model):
     price        = models.DecimalField(max_digits=10, decimal_places=3)
     body         = models.URLField(max_length=200)
     material     = models.CharField(max_length=100)
-    data         = models.DateField(auto_now_add=True)
+    data         = models.DateField()
     discount     = models.FloatField(default=1)
     like         = models.BooleanField(default=False)
     created_at   = models.DateTimeField(auto_now_add=True)
@@ -59,9 +59,8 @@ class Stock(models.Model):
         db_table = 'stocks'
 
 class Tag(models.Model):
-    name    = models.IntegerField()
+    name    = models.CharField(max_length=45)
     product = models.ManyToManyField(Product)
 
     class Meta:
         db_table = 'tags'
-        
