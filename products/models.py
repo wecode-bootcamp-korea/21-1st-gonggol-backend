@@ -9,7 +9,7 @@ from users.models import User
 class MainCategory(models.Model):
     name         = models.CharField(max_length=50)
     created_at   = models.DateTimeField(auto_now_add=True)
-    updated_at   = models.DateTimeField(auto_now_add=True)
+    updated_at   = models.DateTimeField(auto_now=True)
     
     class Meta:
         db_table = 'maincategories'
@@ -18,7 +18,7 @@ class SubCategory(models.Model):
     name         = models.CharField(max_length=50)
     maincategory = models.ForeignKey(MainCategory, on_delete=models.CASCADE)
     created_at   = models.DateTimeField(auto_now_add=True)
-    updated_at   = models.DateTimeField(auto_now_add=True)
+    updated_at   = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'subcategories'
@@ -34,7 +34,6 @@ class Product(models.Model):
     created_at   = models.DateTimeField(auto_now_add=True)
     updated_at   = models.DateTimeField(auto_now=True)
     is_deleted   = models.BooleanField(default=False)
-    user         = models.ManyToManyField(User, through='Like')
     
     class Meta:
         db_table = 'products'
@@ -54,6 +53,7 @@ class Size(models.Model):
     class Meta:
         db_table = 'sizes'
 
+## many to many
 class Stock(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     size    = models.ForeignKey(Size, on_delete=models.CASCADE)
@@ -69,17 +69,18 @@ class Tag(models.Model):
     class Meta:
         db_table = 'tags'
 
+## many to many
 class ProductTag(models.Model):
     tag     = models.ForeignKey(Tag, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'products_tags'
+        db_table = 'product_tags'
 
+## many to many
 class Like(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user    = models.ForeignKey(User, on_delete=models.CASCADE)
-    like    = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'likes'
