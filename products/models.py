@@ -26,7 +26,7 @@ class SubCategory(models.Model):
 class Product(models.Model):
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     name         = models.CharField(max_length=45, unique=True)
-    price        = models.DecimalField(default=0.00)
+    price        = models.DecimalField(max_digits=10, decimal_places=3, default=0.00)
     body         = models.URLField(max_length=200)
     material     = models.CharField(max_length=100)
     date         = models.DateField()
@@ -53,7 +53,6 @@ class Size(models.Model):
     class Meta:
         db_table = 'sizes'
 
-## many to many
 class Stock(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     size    = models.ForeignKey(Size, on_delete=models.CASCADE)
@@ -69,7 +68,6 @@ class Tag(models.Model):
     class Meta:
         db_table = 'tags'
 
-## many to many
 class ProductTag(models.Model):
     tag     = models.ForeignKey(Tag, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -77,7 +75,6 @@ class ProductTag(models.Model):
     class Meta:
         db_table = 'product_tags'
 
-## many to many
 class Like(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user    = models.ForeignKey(User, on_delete=models.CASCADE)
