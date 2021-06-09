@@ -1,9 +1,7 @@
-from products.models import Product, Like
 from django.db import models
 
-# Create your models here.
 class User(models.Model):
-    account_id      = models.CharField(max_length=45, unique=True)
+    account         = models.CharField(max_length=45, unique=True)
     password        = models.CharField(max_length=200)
     name            = models.CharField(max_length=45)
     postal          = models.CharField(max_length=45)
@@ -13,7 +11,7 @@ class User(models.Model):
     sms_reception   = models.BooleanField(default=False)
     email           = models.EmailField(max_length=45, unique=True)
     email_reception = models.BooleanField(default=False)
-    product         = models.ManyToManyField(Product, through=Like)
+    product         = models.ManyToManyField('products.Product', through='products.Like')
 
     class Meta:
         db_table = 'users'
