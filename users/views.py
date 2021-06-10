@@ -6,7 +6,7 @@ from django.db              import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 
 from gonggol.settings import SECRET_KEY, ALGORITHM
-from .models import User
+from .models          import User
 
 class JoinIn(View):
     def post(self, request):
@@ -55,14 +55,14 @@ class JoinIn(View):
 class LogIn(View):
     def post(self, request):
         try:
-            data     = json.loads(request.body)
-            account  = data['account']
+            data           = json.loads(request.body)
+            account        = data['account']
             input_password = data['password'].encode('utf-8')
 
             if account == "" or input_password == "": # id나 password가 입력 없을 때
                 return JsonResponse({"message":"id나 password를 확인하세요."}, status=401)
 
-            login_user = User.objects.get(account=account)
+            login_user  = User.objects.get(account=account)
             db_password = login_user.password.encode('utf-8')
 
             if not bcrypt.checkpw(input_password, db_password): # password 틀렸을 때
