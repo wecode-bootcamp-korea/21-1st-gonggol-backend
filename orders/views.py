@@ -7,11 +7,5 @@ from users.models import User
 
 
 class CartList(View):
-    def get(self, request):
+    def get(self, request): # test
         return JsonResponse({"a":"b"}, status=200)
-    
-    def post(self, request):
-        data = json.load(request.body)
-        user = data['account']
-        product = data['product']
-        quantity = data['quantity']

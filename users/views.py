@@ -27,7 +27,7 @@ class JoinIn(View):
             pw_regex      = '^[A-Za-z0-9@#$!]{8,12}$'
             account_regex = '^[A-Za-z0-9]{8,12}$'
 
-            if not re.match(account_regex, account):
+            if not re.match(account_regex, account): # 이하 형식오류 처리
                 return JsonResponse({"message":"id 형식을 확인하세요."}, status=400)
             elif not re.match(pw_regex, password):
                 return JsonResponse({"message":"password 형식을 확인하세요."}, status=400)
@@ -59,19 +59,19 @@ class LogIn(View):
             account  = data['account']
             input_password = data['password'].encode('utf-8')
 
-            if account == "" or input_password == "":
+            if account == "" or input_password == "": # id나 password가 입력 없을 때
                 return JsonResponse({"message":"id나 password를 확인하세요."}, status=401)
 
             login_user = User.objects.get(account=account)
             db_password = login_user.password.encode('utf-8')
 
-            if not bcrypt.checkpw(input_password, db_password):
-                return JsonResponse({"message":"id나 password를 확인하세요."}, status=400)
+            if not bcrypt.checkpw(input_password, db_password): # password 틀렸을 때
+                return JsonResponse({"message":"id나 password를 확인하세요."}, status=401)
 
             token     = jwt.encode({"user_id" : login_user.account}, SECRET_KEY, algorithm=ALGORITHM)
             return JsonResponse({"token" : token, "message" : "SUCCESE!"}, status=200)
 
-        except ObjectDoesNotExist:
+        except ObjectDoesNotExist: # id 틀렸을 때
             return JsonResponse({"message":"id나 password를 확인하세요."}, status=401)
         except KeyError: # id나 password가 입력 없을 때
             return JsonResponse({"message":"id나 password를 확인하세요."}, status=401)
