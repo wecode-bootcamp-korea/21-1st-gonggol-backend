@@ -1,4 +1,5 @@
 import json
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.db.models.fields import json
 from django.http             import JsonResponse
@@ -16,21 +17,26 @@ from products.models import Image, Product, ProductTag, SubCategory, Tag
  ## 백팩 상품 list 
 class ProductListView(View):
     def get(self, request):
-        sub_name              = SubCategory.objects.get(name="백팩")
-        backpack_name         = Product.objects.filter(sub_category_id=sub_name.id)
-        main_img              = Image.objects.filter(is_main=False)
+        # sub 카테고리 별 상품 list 
+        try:
+            sub_category_name = request.GET['name']
+            sub_category      = SubCategory.objects.get(name=sub_category_name)
+            products          = Product.objects.filter(sub_category_id=sub_category.id)
+            main_image        = Image.objects.filter(is_main=True)
         
-        backpack_product_info = []
-        for backpack_product in backpack_name:
-            tags = ProductTag.objects.filter(product_id=backpack_product.id)
-            backpack_product_info.append(
-                {
-                    "product_name"  : backpack_product.name,
-                    "product_price" : backpack_product.price,
-                    "retail_price"  : float(backpack_product.price) * backpack_product.discount,
-                    "product_image" : [img.url for img in main_img],
-                    "product_tag"   : [tag.tag.name for tag in tags]
-                }
-            )
+            product_list_info = []
+            for product in products:
+                tags = ProductTag.objects.filter(product_id=product.id)
+                product_list_info.append(
+                    {
+                        "product_name"  : product.name,
+                        "product_price" : product.price,
+                        "sale_price"    : float(product.price) * product.discount,
+                        "product_image" : [img.url for img in main_image],
+                        "product_tag"   : [tag.tag.name for tag in tags]
+                    }
+                )
         
-        return JsonResponse({'Product_list': backpack_product_info}, status=200)
+            return JsonResponse({'Product_list': product_list_info}, status=200)
+        except ObjectDoesNotExist:
+            return JsonResponse({'MESSAGE': 'NONE CATEGORY'}, status=404)
