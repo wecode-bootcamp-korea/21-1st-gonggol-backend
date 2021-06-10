@@ -8,4 +8,4 @@ from users.models import User
 
 class CartList(View):
     def get(self, request): # test
-        return JsonResponse({"a":"b"}, status=200)
+        return JsonResponse({"aa":"bb"}, status=200)
