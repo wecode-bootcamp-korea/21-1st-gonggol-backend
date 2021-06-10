@@ -8,27 +8,13 @@ from products.models import Product, Image, Stock, ProductTag
 class ProductDetailView(View):
     def get(self, request):
         try:
-            data1       = json.loads(request.body)
-            product     = Product.objects.get(id=data1['product_id'])
+            product_id  = request.GET['product_id']
+            product     = Product.objects.get(id=product_id)
             images      = Image.objects.filter(product_id=product.id)
             tags        = ProductTag.objects.filter(product_id=product.id)
             size_stocks = Stock.objects.filter(product_id=product.id)
 
-            if product.discount < 1:
-                data = {
-                'name'      : product.name,
-                'sell_price': float(product.price)*product.discount,
-                'con_price' : product.price,
-                'body'      : product.body,
-                'image'     : [image.url for image in images],
-                'tags'      : [tag.tag.name for tag in tags],
-                'material'  : product.material,
-                'size'      : [size_stock.size.size for size_stock in size_stocks],
-                'stock'     : [size_stock.count for size_stock in size_stocks],
-            }
-
-            if product.discount == 1:
-                data = {
+            data = {
                     'name'     : product.name,
                     'price'    : product.price,
                     'body'     : product.body,
@@ -37,7 +23,10 @@ class ProductDetailView(View):
                     'material' : product.material,
                     'size'     : [size_stock.size.size for size_stock in size_stocks],
                     'stock'    : [size_stock.count for size_stock in size_stocks],
-                }
+            }
+
+            if product.discount < 1:
+                data['sell_price'] = (float(product.price)*product.discount)
 
             return JsonResponse({"result":data}, status = 200)
 
