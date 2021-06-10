@@ -72,3 +72,5 @@ class LogIn(View):
 
         except User.DoesNotExist: # id 틀렸을 때
             return JsonResponse({"message":"id나 password를 확인하세요."}, status=401)
+        except KeyError:
+            return JsonResponse({"message":"KeyError"}, status=401)
