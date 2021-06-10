@@ -6,9 +6,9 @@ from django.http      import JsonResponse
 from products.models import Product, Image, Stock, ProductTag
 
 class ProductDetailView(View):
-    def get(self, request):
+    def get(self, request, product_id):
         try:
-            product_id  = request.GET['product_id']
+            # product_id  = request.GET['product_id']
             product     = Product.objects.get(id=product_id)
             images      = Image.objects.filter(product_id=product.id)
             tags        = ProductTag.objects.filter(product_id=product.id)
