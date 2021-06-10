@@ -3,7 +3,6 @@ import json, bcrypt, jwt, re
 from django.views           import View
 from django.http            import JsonResponse
 from django.db              import IntegrityError
-from django.core.exceptions import ObjectDoesNotExist
 
 from gonggol.settings import SECRET_KEY, ALGORITHM
 from .models          import User
@@ -29,7 +28,7 @@ class JoinIn(View):
 
             if not re.match(account_regex, account): # 이하 형식오류 처리
                 return JsonResponse({"message":"id 형식을 확인하세요."}, status=400)
-            elif not re.match(pw_regex, password):
+            if not re.match(pw_regex, password):
                 return JsonResponse({"message":"password 형식을 확인하세요."}, status=400)
             if not re.match(email_regex, email):
                 return JsonResponse({"message":"email 형식을 확인하세요."}, status=400)
@@ -46,7 +45,7 @@ class JoinIn(View):
             email           = email,
             email_reception = email_reception,
             )
-            return JsonResponse({"message":"SUCCESS!"}, status=200)
+            return JsonResponse({"message":"SUCCESS!"}, status=201)
         except IntegrityError:
             return JsonResponse({"message":"ID나 email중복입니다."}, status=400)
         except KeyError:
@@ -59,7 +58,7 @@ class LogIn(View):
             account        = data['account']
             input_password = data['password'].encode('utf-8')
 
-            if account == "" or input_password == "": # id나 password가 입력 없을 때
+            if not account or not input_password: # id나 password가 입력 없을 때
                 return JsonResponse({"message":"id나 password를 확인하세요."}, status=401)
 
             login_user  = User.objects.get(account=account)
@@ -71,7 +70,5 @@ class LogIn(View):
             token     = jwt.encode({"user_id" : login_user.account}, SECRET_KEY, algorithm=ALGORITHM)
             return JsonResponse({"token" : token, "message" : "SUCCESE!"}, status=200)
 
-        except ObjectDoesNotExist: # id 틀렸을 때
-            return JsonResponse({"message":"id나 password를 확인하세요."}, status=401)
-        except KeyError: # id나 password가 입력 없을 때
+        except User.DoesNotExist: # id 틀렸을 때
             return JsonResponse({"message":"id나 password를 확인하세요."}, status=401)
