@@ -67,7 +67,7 @@ class LogIn(View):
             if not bcrypt.checkpw(input_password, db_password): # password 틀렸을 때
                 return JsonResponse({"message":"id나 password를 확인하세요."}, status=401)
 
-            token     = jwt.encode({"user_id" : login_user.account}, SECRET_KEY, algorithm=ALGORITHM)
+            token     = jwt.encode({"user_id":login_user.account}, SECRET_KEY, algorithm=ALGORITHM)
             return JsonResponse({"token" : token, "message" : "SUCCESE!"}, status=200)
 
         except User.DoesNotExist: # id 틀렸을 때
