@@ -13,6 +13,11 @@ from products.models import Image, Product, ProductTag, SubCategory, Tag
  # 2. 신상품, 세일, 베스트 태그
  # 3. 상품 이름
  # 4. 가격 / 세일 :
+ 
+ # total _ product  = 숫자. 0.ㅐ 
+ # product_id
+ # 할인률만 주자!!
+ # 태그는 트루 펄스 값 : 
 
  ## 백팩 상품 list 
 class ProductListView(View):
@@ -29,9 +34,11 @@ class ProductListView(View):
                 tags = ProductTag.objects.filter(product_id=product.id)
                 product_list_info.append(
                     {
+                        # "product_total" : 
+                        "product_id"    : product.id,
                         "product_name"  : product.name,
                         "product_price" : product.price,
-                        "sale_price"    : float(product.price) * product.discount,
+                        "discount_rate" : product.discount,
                         "product_image" : [img.url for img in main_image],
                         "product_tag"   : [tag.tag.name for tag in tags]
                     }
@@ -40,3 +47,9 @@ class ProductListView(View):
             return JsonResponse({'Product_list': product_list_info}, status=200)
         except ObjectDoesNotExist:
             return JsonResponse({'MESSAGE': 'NONE CATEGORY'}, status=404)
+
+
+
+
+
+
