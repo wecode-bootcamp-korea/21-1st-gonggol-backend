@@ -8,25 +8,28 @@ from products.models import Product, Image, Stock, ProductTag
 class ProductDetailView(View):
     def get(self, request, product_id):
         try:
-            # product_id  = request.GET['product_id']
             product     = Product.objects.get(id=product_id)
             images      = Image.objects.filter(product_id=product.id)
             tags        = ProductTag.objects.filter(product_id=product.id)
             size_stocks = Stock.objects.filter(product_id=product.id)
 
             data = {
-                    'name'     : product.name,
-                    'price'    : product.price,
-                    'body'     : product.body,
-                    'image'    : [image.url for image in images],
-                    'tags'     : [tag.tag.name for tag in tags],
-                    'material' : product.material,
-                    'size'     : [size_stock.size.size for size_stock in size_stocks],
-                    'stock'    : [size_stock.count for size_stock in size_stocks],
+                'main_cate'    : product.sub_category.maincategory.name,
+                'sub_cate'     : product.sub_category.name,
+                'product_id'   : product.id,
+                'product_name' : product.name,
+                'product_price': int(product.price),
+                'bodyimg'      : product.body_img,
+                'bodyinfo'     : product.body_info,
+                'bodysize'     : product.body_size,
+                'product_image': [image.url for image in images],
+                'tags'         : [{'new':tag.tag.new, 'sale':tag.tag.sale, 'best':tag.tag.best} for tag in tags],
+                'material'     : product.material,
+                'size_option'  : [{'option_stock':size_stock.count,'option_name':size_stock.size.size} for size_stock in size_stocks]
             }
 
             if product.discount < 1:
-                data['sell_price'] = (float(product.price)*product.discount)
+                data['selling_rate'] = product.discount
 
             return JsonResponse({"result":data}, status = 200)
 

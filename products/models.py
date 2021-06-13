@@ -24,7 +24,9 @@ class Product(models.Model):
     sub_category = models.ForeignKey('SubCategory', on_delete=models.CASCADE)
     name         = models.CharField(max_length=45, unique=True)
     price        = models.DecimalField(max_digits=10, decimal_places=3, default=0.00)
-    body         = models.URLField(max_length=200)
+    body_img     = models.URLField(max_length=200)
+    body_info    = models.URLField(max_length=200)
+    body_size    = models.URLField(max_length=200)
     material     = models.CharField(max_length=100)
     date         = models.DateField()
     discount     = models.FloatField(default=1)
@@ -59,7 +61,9 @@ class Stock(models.Model):
         db_table = 'stocks'
 
 class Tag(models.Model):
-    name    = models.CharField(max_length=45)
+    new     = models.BooleanField(default=False)
+    sale    = models.BooleanField(default=False)
+    best    = models.BooleanField(default=False)
     product = models.ManyToManyField('Product', through='ProductTag')
 
     class Meta:
