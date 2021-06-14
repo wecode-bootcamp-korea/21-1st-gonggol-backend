@@ -59,7 +59,9 @@ class Stock(models.Model):
         db_table = 'stocks'
 
 class Tag(models.Model):
-    name    = models.CharField(max_length=45)
+    new     = models.BooleanField(default=False)
+    best    = models.BooleanField(default=False)
+    sale    = models.BooleanField(default=False)
     product = models.ManyToManyField('Product', through='ProductTag')
 
     class Meta:
