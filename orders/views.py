@@ -10,7 +10,7 @@ from users.utils     import UserInfoDeco
 
 class CartList(View):
     @UserInfoDeco
-    def post(self, request): # 제품에서 장바구니 눌렀을 때, 우선 카트 테이블에 저장
+    def post(self, request): # 제품상세에서 장바구니 눌렀을 때, 우선 DB에 저장
         try:
             user     = request.user # token 유저정보
             data     = json.loads(request.body)
@@ -36,7 +36,7 @@ class CartList(View):
 
 class CartListView(View):
     @UserInfoDeco
-    def get(self, request):
+    def get(self, request): # User의 장바구니 프론트단 전달
         user       = request.user
         order_list = Order.objects.filter(user_id=user.id)
         
@@ -44,11 +44,11 @@ class CartListView(View):
         for product_info in order_list:
             product = Product.objects.get(id=product_info.product_id)
             order_info = {
-                "product_name" : product.name,
+                "제품명"       : product.name,
                 "옵션"         : product_info.size,
                 "수량"         : product_info.quantity,
                 "판매가"       : product.price,
-                "image"        : product.image_set.get(id=product.id).url
+                "image"        : product.image_set.get(product_id=product.id).url
             }
             cart.append(order_info)
         return JsonResponse({"message" : cart}, status=200)
