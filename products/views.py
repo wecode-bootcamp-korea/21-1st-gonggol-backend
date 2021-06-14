@@ -1,55 +1,50 @@
 import json
-from django.core.exceptions import ObjectDoesNotExist
 
-from django.db.models.fields import json
+from django.core.exceptions  import ObjectDoesNotExist
 from django.http             import JsonResponse
 from django.views            import View
 from django.db.models        import Q
 
-from products.models import Image, Product, ProductTag, SubCategory, Tag
+from products.models import Image, MainCategory, Product, ProductTag, SubCategory, Tag
 
-### 상품 리스트 / sub카테고리 별로 get 로직 
- # 1. 이미지
- # 2. 신상품, 세일, 베스트 태그
- # 3. 상품 이름
- # 4. 가격 / 세일 :
- 
- # total _ product  = 숫자. 0.ㅐ 
- # product_id
- # 할인률만 주자!!
- # 태그는 트루 펄스 값 : 
-
- ## 백팩 상품 list 
 class ProductListView(View):
     def get(self, request):
-        # sub 카테고리 별 상품 list 
         try:
-            sub_category_name = request.GET['name']
-            sub_category      = SubCategory.objects.get(name=sub_category_name)
-            products          = Product.objects.filter(sub_category_id=sub_category.id)
-            main_image        = Image.objects.filter(is_main=True)
-        
-            product_list_info = []
+            category_id     = request.GET.get('categoryId', None)
+            sub_category_id = request.GET.get('subcategoryId', None)
+            sort            = request.GET.get('sort-method', None)
+
+            q = Q()
+            
+            if category_id:
+                q &= Q(sub_category__maincategory_id=category_id)
+                products = Product.objects.filter(q)
+
+            if sub_category_id:
+                q &= Q(sub_category_id=sub_category_id)
+                products = Product.objects.filter(q)
+            
+            if (category_id or sub_category_id) and sort:
+                q &= Q(sub_category__maincategory_id=category_id)
+                products = Product.objects.filter(q).order_by(sort)
+
+            results = []
+
             for product in products:
-                tags = ProductTag.objects.filter(product_id=product.id)
-                product_list_info.append(
+                tags       = ProductTag.objects.filter(product_id=product.id)
+                main_image = Image.objects.filter(is_main=True)
+                results.append(
                     {
-                        # "product_total" : 
                         "product_id"    : product.id,
                         "product_name"  : product.name,
-                        "product_price" : product.price,
+                        "product_price" : int(product.price),
                         "discount_rate" : product.discount,
                         "product_image" : [img.url for img in main_image],
-                        "product_tag"   : [tag.tag.name for tag in tags]
+                        "product_tag"   : [{"new":tag.tag.new, "sale":tag.tag.sale, "best":tag.tag.best} for tag in tags]
                     }
                 )
-        
-            return JsonResponse({'Product_list': product_list_info}, status=200)
-        except ObjectDoesNotExist:
-            return JsonResponse({'MESSAGE': 'NONE CATEGORY'}, status=404)
-
-
-
-
-
-
+            return JsonResponse({"results": results, "total_counts" : len(results)}, status=200)
+        except:
+            return JsonResponse({"MESSAGE": "해당 상품이 존재하지 않습니다."}, status=404)
+            
+            
