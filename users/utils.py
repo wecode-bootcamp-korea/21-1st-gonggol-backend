@@ -8,10 +8,10 @@ from gonggol.settings import SECRET_KEY, ALGORITHM
 def UserInfoDeco(func):
     def wrapper(self, request, *args, **kwargs):
         try:
-            token              = request.headers.get('authorization', None)
+            token              = request.headers.get('token', None)
             payload            = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
-            user               = User.objects.get(account=payload['account'])
-            request.login_user = user
+            user               = User.objects.get(account=payload['user_id'])
+            request.user       = user
 
             return func(self, request, *args, **kwargs)
 

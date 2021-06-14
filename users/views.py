@@ -6,6 +6,7 @@ from django.db              import IntegrityError
 
 from gonggol.settings import SECRET_KEY, ALGORITHM
 from .models          import User
+from .utils           import UserInfoDeco
 
 class JoinIn(View):
     def post(self, request):
@@ -57,7 +58,6 @@ class LogIn(View):
             data           = json.loads(request.body)
             account        = data['account']
             input_password = data['password'].encode('utf-8')
-
             if not account or not input_password: # id나 password가 입력 없을 때
                 return JsonResponse({"message":"id나 password를 확인하세요."}, status=401)
 
