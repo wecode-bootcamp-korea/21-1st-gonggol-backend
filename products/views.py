@@ -14,20 +14,20 @@ class ProductDetailView(View):
             size_stocks = Stock.objects.filter(product_id=product.id)
 
             data = {
-                'main_cate'    : product.sub_category.maincategory.name,
-                'sub_cate'     : product.sub_category.name,
+                'main_category': product.sub_category.maincategory.name,
+                'sub_category' : product.sub_category.name,
                 'product_id'   : product.id,
                 'product_name' : product.name,
                 'product_price': int(product.price),
-                'body'         : product.body,
+                'produrct_body': product.body,
                 'product_image': [image.url for image in images],
-                'tags'         : [{'new':tag.tag.new, 'sale':tag.tag.sale, 'best':tag.tag.best} for tag in tags],
-                'material'     : product.material,
-                'size_option'  : [{'option_stock':size_stock.count,'option_name':size_stock.size.size} for size_stock in size_stocks]
+                'product_tag'  : [{'new':tag.tag.new, 'sale':tag.tag.sale, 'best':tag.tag.best} for tag in tags],
+                'product_mat'  : product.material,
+                'produect_size': [{'option_stock':size_stock.count,'option_name':size_stock.size.size} for size_stock in size_stocks]
             }
 
             if product.discount < 1:
-                data['selling_rate'] = product.discount
+                data['discount_rate'] = product.discount
 
             return JsonResponse({"result":data}, status = 200)
 
