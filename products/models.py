@@ -60,8 +60,8 @@ class Stock(models.Model):
 
 class Tag(models.Model):
     new     = models.BooleanField(default=False)
-    best    = models.BooleanField(default=False)
     sale    = models.BooleanField(default=False)
+    best    = models.BooleanField(default=False)
     product = models.ManyToManyField('Product', through='ProductTag')
 
     class Meta:
