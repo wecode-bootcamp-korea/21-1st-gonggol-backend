@@ -8,7 +8,7 @@ from users.models    import User
 from products.models import Product, Image
 from users.utils     import UserInfoDeco
 
-class CartList(View):
+class CartView(View):
     @UserInfoDeco
     def post(self, request): # 제품상세에서 장바구니 눌렀을 때, 우선 DB에 저장
         try:
@@ -33,8 +33,7 @@ class CartList(View):
                 return JsonResponse({"message":"장바구니 생성 성공"}, status=200)
         except Product.DoesNotExist:
             return JsonResponse({"message":"잘못된 product"}, status=500)
-
-class CartListView(View):
+            
     @UserInfoDeco
     def get(self, request): # User의 장바구니 프론트단 전달
         user       = request.user

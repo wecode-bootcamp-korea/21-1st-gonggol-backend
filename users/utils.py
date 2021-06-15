@@ -10,8 +10,7 @@ def UserInfoDeco(func):
         try:
             token              = request.headers.get('token', None)
             payload            = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
-            user               = User.objects.get(account=payload['user_id'])
-            request.user       = user
+            request.user       = User.objects.get(account=payload['user_id'])
 
             return func(self, request, *args, **kwargs)
 
