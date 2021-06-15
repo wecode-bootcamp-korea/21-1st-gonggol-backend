@@ -33,7 +33,7 @@ class CartView(View):
                 return JsonResponse({"message":"장바구니 생성 성공"}, status=200)
         except Product.DoesNotExist:
             return JsonResponse({"message":"잘못된 product"}, status=500)
-            
+
     @UserInfoDeco
     def get(self, request): # User의 장바구니 프론트단 전달
         user       = request.user
@@ -43,10 +43,10 @@ class CartView(View):
         for product_info in order_list:
             product = Product.objects.get(id=product_info.product_id)
             order_info = {
-                "제품명"       : product.name,
-                "옵션"         : product_info.size,
-                "수량"         : product_info.quantity,
-                "판매가"       : product.price,
+                "product_name" : product.name,
+                "option"       : product_info.size,
+                "quantity"     : product_info.quantity,
+                "price"        : product.price,
                 "image"        : product.image_set.get(product_id=product.id).url
             }
             cart.append(order_info)
