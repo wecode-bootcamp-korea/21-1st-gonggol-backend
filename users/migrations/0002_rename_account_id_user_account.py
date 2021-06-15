@@ -11,10 +11,3 @@ class Migration(migrations.Migration):
         ('users', '0001_initial'),
     ]
 
-    operations = [
-        migrations.RenameField(
-            model_name='user',
-            old_name='account_id',
-            new_name='account',
-        ),
-    ]
