@@ -32,7 +32,7 @@ class ProductListView(View):
 
             for product in products:
                 tags       = ProductTag.objects.filter(product_id=product.id)
-                main_image = Image.objects.filter(is_main=True)
+                main_image = Image.objects.filter(is_main=False)
                 results.append(
                     {
                         "product_id"    : product.id,
