@@ -3,7 +3,6 @@ import json
 from django.db.models import Q
 from django.views     import View
 from django.http      import JsonResponse
-from django.db.models import Q
 
 from products.models import Product, Image, Stock, ProductTag, MainCategory, SubCategory, Tag
 
@@ -46,33 +45,28 @@ class ProductListView(View):
             sort            = request.GET.get('sort-method', None)
             page            = int(request.GET.get('page', 1)) 
             
-            p      = page*PAGE
-            p_min  = -PAGE
-            p_max  = 0
-            p_max += p
-            p_min += p
+            p_max  = page*PAGE
+            p_min  = p_max-PAGE
 
             q = Q()
             
             if category_id:
                 q &= Q(sub_category__maincategory_id=category_id)
-                total    = Product.objects.filter(q)
                 products = Product.objects.filter(q)[p_min:p_max]
 
             if sub_category_id:
                 q &= Q(sub_category_id=sub_category_id)
-                total    = Product.objects.filter(q)
                 products = Product.objects.filter(q)[p_min:p_max]
             
             if category_id and sort:
                 q &= Q(sub_category__maincategory_id=category_id)
-                total    = Product.objects.filter(q)
                 products = Product.objects.filter(q).order_by(sort)[p_min:p_max]
 
             if sub_category_id and sort:
                 q &= Q(sub_category_id=sub_category_id)
-                total    = Product.objects.filter(q)
                 products = Product.objects.filter(q).order_by(sort)[p_min:p_max]
+
+            total = Product.objects.filter(q)
 
             if not products:
                 return JsonResponse({"MESSAGE": "해당 상품이 존재하지 않습니다."}, status=404)
