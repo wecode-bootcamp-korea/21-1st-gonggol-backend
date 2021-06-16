@@ -57,6 +57,13 @@ class ProductListView(View):
                 q &= Q(sub_category__maincategory_id=category_id)
                 products = Product.objects.filter(q).order_by(sort)
 
+             #### paginator
+            page = request.GET.get('page', 1)
+            if page:
+                Product.objects.
+                # page_obj = paginator.get_page(page_number)
+                p = Paginator([i.name])
+
             results = []
 
             for product in products:
