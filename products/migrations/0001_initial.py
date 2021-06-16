@@ -77,7 +77,9 @@ class Migration(migrations.Migration):
             name='Tag',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=45)),
+                ('new', models.BooleanField(default=False)),
+                ('best', models.BooleanField(default=False)),
+                ('sale', models.BooleanField(default=False)),
                 ('product', models.ManyToManyField(through='products.ProductTag', to='products.Product')),
             ],
             options={
