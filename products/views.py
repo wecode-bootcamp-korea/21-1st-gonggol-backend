@@ -4,7 +4,6 @@ from django.db.models import Q
 from django.views     import View
 from django.http      import JsonResponse
 
-
 from products.models import Product, Image, Stock, ProductTag, MainCategory, SubCategory, Tag
 
 class ProductDetailView(View):
@@ -23,10 +22,17 @@ class ProductDetailView(View):
                 'product_price': int(product.price),
                 'product_body' : product.body,
                 'product_image': [image.url for image in images],
-                'product_tag'  : [{'new':tag.tag.new, 'sale':tag.tag.sale, 'best':tag.tag.best} for tag in tags],
+                'product_tag'  : [{
+                    'new' :tag.tag.new, 
+                    'sale':tag.tag.sale, 
+                    'best':tag.tag.best} for tag in tags],
                 'product_mat'  : product.material,
-                'product_size' : [{'option_id':size_stock.size.id,'option_stock':size_stock.count,'option_name':size_stock.size.size} for size_stock in size_stocks]
-            }
+                'product_size' : [{
+                    'option_id'   :size_stock.size.id,
+                    'option_stock':size_stock.count,
+                    'option_name' :size_stock.size.size
+                    } for size_stock in size_stocks]
+                }
 
             if product.discount < 1:
                 data['discount_rate'] = product.discount
@@ -73,12 +79,15 @@ class ProductListView(View):
                         "product_price" : int(product.price),
                         "discount_rate" : product.discount,
                         "product_image" : [img.url for img in main_image],
-                        "product_tag"   : [{"new":tag.tag.new, "sale":tag.tag.sale, "best":tag.tag.best} for tag in tags]
+                        "product_tag"   : [{
+                            "new":tag.tag.new, 
+                            "sale":tag.tag.sale, 
+                            "best":tag.tag.best} for tag in tags]
                     }
                 )
             return JsonResponse({"results": results, "total_counts" : len(results)}, status=200)
         except:
-            return JsonResponse({"MESSAGE": "해당 상품이 존재하지 않습니다."}, status=404)
+            return JsonResponse({"MESSAGE": "해당 상품이 존재하지 않습니다.", "status": '404'}, status=404)
 
 class ProductMainView(View):
     def get(self, request):
