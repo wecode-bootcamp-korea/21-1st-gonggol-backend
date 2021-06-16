@@ -3,7 +3,7 @@ import json
 from django.db.models import Q
 from django.views     import View
 from django.http      import JsonResponse
-from django.db.models import Q
+
 
 from products.models import Product, Image, Stock, ProductTag, MainCategory, SubCategory, Tag
 
@@ -21,11 +21,11 @@ class ProductDetailView(View):
                 'product_id'   : product.id,
                 'product_name' : product.name,
                 'product_price': int(product.price),
-                'produrct_body': product.body,
+                'product_body' : product.body,
                 'product_image': [image.url for image in images],
                 'product_tag'  : [{'new':tag.tag.new, 'sale':tag.tag.sale, 'best':tag.tag.best} for tag in tags],
                 'product_mat'  : product.material,
-                'produect_size': [{'option_stock':size_stock.count,'option_name':size_stock.size.size} for size_stock in size_stocks]
+                'product_size' : [{'option_id':size_stock.size.id,'option_stock':size_stock.count,'option_name':size_stock.size.size} for size_stock in size_stocks]
             }
 
             if product.discount < 1:
@@ -53,8 +53,12 @@ class ProductListView(View):
                 q &= Q(sub_category_id=sub_category_id)
                 products = Product.objects.filter(q)
             
-            if (category_id or sub_category_id) and sort:
+            if category_id and sort:
                 q &= Q(sub_category__maincategory_id=category_id)
+                products = Product.objects.filter(q).order_by(sort)
+
+            if sub_category_id and sort:
+                q &= Q(sub_category_id=sub_category_id)
                 products = Product.objects.filter(q).order_by(sort)
 
             results = []
