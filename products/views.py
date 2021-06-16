@@ -62,4 +62,4 @@ class ProductMainView(View):
                     }
 
             best_product_lists.append(best_product_list)
-        return JsonResponse({"result":{"new":new_product_lists[:7],"best":best_product_lists[:18]}}, status = 200)
+        return JsonResponse({"result":{"new":new_product_lists[:18],"best":best_product_lists[:6]}}, status = 200)
