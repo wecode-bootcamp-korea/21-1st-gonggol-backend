@@ -20,11 +20,11 @@ class ProductDetailView(View):
                 'product_id'   : product.id,
                 'product_name' : product.name,
                 'product_price': int(product.price),
-                'produrct_body': product.body,
+                'product_body': product.body,
                 'product_image': [image.url for image in images],
                 'product_tag'  : [{'new':tag.tag.new, 'sale':tag.tag.sale, 'best':tag.tag.best} for tag in tags],
                 'product_mat'  : product.material,
-                'produect_size': [{'option_stock':size_stock.count,'option_name':size_stock.size.size} for size_stock in size_stocks]
+                'product_size': [{'option_id':size_stock.size.id,'option_stock':size_stock.count,'option_name':size_stock.size.size} for size_stock in size_stocks]
             }
 
             if product.discount < 1:
