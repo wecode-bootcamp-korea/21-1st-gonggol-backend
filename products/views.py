@@ -53,8 +53,12 @@ class ProductListView(View):
                 q &= Q(sub_category_id=sub_category_id)
                 products = Product.objects.filter(q)
             
-            if (category_id or sub_category_id) and sort:
+            if category_id and sort:
                 q &= Q(sub_category__maincategory_id=category_id)
+                products = Product.objects.filter(q).order_by(sort)
+            
+            if sub_category_id and sort:
+                q &= Q(sub_category_id=sub_category_id)
                 products = Product.objects.filter(q).order_by(sort)
 
             results = []
