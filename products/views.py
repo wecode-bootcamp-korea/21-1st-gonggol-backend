@@ -7,6 +7,8 @@ from django.db.models import Q
 
 from products.models import Product, Image, Stock, ProductTag, MainCategory, SubCategory, Tag
 
+PAGE = 8
+
 class ProductDetailView(View):
     def get(self, request, product_id):
         try:
@@ -42,27 +44,38 @@ class ProductListView(View):
             category_id     = request.GET.get('categoryId', None)
             sub_category_id = request.GET.get('subcategoryId', None)
             sort            = request.GET.get('sort-method', None)
+            page            = int(request.GET.get('page', 1)) 
+            
+            p      = page*PAGE
+            p_min  = -PAGE
+            p_max  = 0
+            p_max += p
+            p_min += p
 
             q = Q()
             
             if category_id:
                 q &= Q(sub_category__maincategory_id=category_id)
-                products = Product.objects.filter(q)
+                total    = Product.objects.filter(q)
+                products = Product.objects.filter(q)[p_min:p_max]
 
             if sub_category_id:
                 q &= Q(sub_category_id=sub_category_id)
-                products = Product.objects.filter(q)
+                total    = Product.objects.filter(q)
+                products = Product.objects.filter(q)[p_min:p_max]
             
-            if (category_id or sub_category_id) and sort:
+            if category_id and sort:
                 q &= Q(sub_category__maincategory_id=category_id)
-                products = Product.objects.filter(q).order_by(sort)
+                total    = Product.objects.filter(q)
+                products = Product.objects.filter(q).order_by(sort)[p_min:p_max]
 
-             #### paginator
-            page = request.GET.get('page', 1)
-            if page:
-                Product.objects.
-                # page_obj = paginator.get_page(page_number)
-                p = Paginator([i.name])
+            if sub_category_id and sort:
+                q &= Q(sub_category_id=sub_category_id)
+                total    = Product.objects.filter(q)
+                products = Product.objects.filter(q).order_by(sort)[p_min:p_max]
+
+            if not products:
+                return JsonResponse({"MESSAGE": "해당 상품이 존재하지 않습니다."}, status=404)
 
             results = []
 
@@ -79,7 +92,7 @@ class ProductListView(View):
                         "product_tag"   : [{"new":tag.tag.new, "sale":tag.tag.sale, "best":tag.tag.best} for tag in tags]
                     }
                 )
-            return JsonResponse({"results": results, "total_counts" : len(results)}, status=200)
+            return JsonResponse({"results": results, "total_counts" : len(total), "page_count": PAGE}, status=200) 
         except:
             return JsonResponse({"MESSAGE": "해당 상품이 존재하지 않습니다."}, status=404)
 
