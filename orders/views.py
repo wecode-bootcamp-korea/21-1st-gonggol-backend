@@ -3,31 +3,28 @@ import json
 from django.views import View
 from django.http  import JsonResponse
 
-from .models         import Order, CartItem, Status
+from .models         import Order, OrderItem, Status
 from products.models import Product
 from users.utils     import UserInfoDeco
 
-class CartView(View):
+class OrderView(View):
     @UserInfoDeco
     def post(self, request):
-        user     = request.user
-        data     = json.loads(request.body)
-        size     = data['size']
-        quantity = data['quantity']
-        product  = Product.objects.get(id=data['productId'])
-        status   = Status.objects.get(id=1)
-        cart     = Order.objects.filter(user_id=user.id, status=status).first()
-        
-        if not cart:
-            Order.objects.create(user_id=user.id, status=status)  # 유저의 테이블 없다면 생성
+        user       = request.user
+        data       = json.loads(request.body)
+        size       = data['size']
+        quantity   = data['quantity']
+        product    = Product.objects.get(id=data['productId'])
+        status     = Status.objects.get(id=1)
+        cart, flag = Order.objects.get_or_create(user_id=user.id, status=status)
 
-        if CartItem.objects.filter(order_id=cart.id, product_id=product.id, size=size).exists(): # 이미 CartItem에 동일 제품이 있다면 갯추만 증가
-            user_order           = CartItem.objects.get(order_id=cart.id, product_id=product.id, size=size)
+        if OrderItem.objects.filter(order_id=cart.id, product_id=product.id, size=size).exists(): # 이미 CartItem에 동일 제품이 있다면 갯추만 증가
+            user_order           = OrderItem.objects.get(order_id=cart.id, product_id=product.id, size=size)
             user_order.quantity += int(quantity)
             user_order.save()
             return JsonResponse({"message":"cart update success"}, status=200)
 
-        CartItem.objects.create(
+        OrderItem.objects.create(
             order_id   = cart.id,
             product_id = product.id,
             size       = size,
@@ -40,7 +37,7 @@ class CartView(View):
         try:
             user        = request.user
             order       = Order.objects.get(user_id=user.id)
-            cart_items  = order.cartitem_set.filter(order_id=order.id)
+            cart_items  = order.orderitem_set.filter(order_id=order.id)
             
             cartlist = []
             for product_info in cart_items:
@@ -63,8 +60,8 @@ class CartView(View):
             user = request.user
 
             user_info = Order.objects.get(user_id=user.id)
-            del_item  = user_info.cartitem_set.get(product_id = productId)
+            del_item  = user_info.orderitem_set.get(product_id = productId)
             del_item.delete()
             return JsonResponse({"message" : "success"}, status=200)
-        except CartItem.DoesNotExist:
+        except OrderItem.DoesNotExist:
             return JsonResponse({"message" : "INVALID_productId"}, status=400)

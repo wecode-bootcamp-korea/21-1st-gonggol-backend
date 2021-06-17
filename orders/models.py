@@ -12,14 +12,14 @@ class Order(models.Model):
     class Meta:
         db_table = 'orders'
 
-class CartItem(models.Model):
+class OrderItem(models.Model):
     order    = models.ForeignKey('Order', on_delete=CASCADE)
     product  = models.ForeignKey('products.Product', on_delete=CASCADE)
     quantity = models.IntegerField()
     size     = models.CharField(max_length=10, null=True)
 
     class Meta:
-        db_table = 'cart_items'
+        db_table = 'order_items'
 
 class Status(models.Model):
     status_name = models.CharField(max_length=10)
