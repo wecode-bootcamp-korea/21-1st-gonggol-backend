@@ -72,15 +72,11 @@ class ProductListView(View):
             if sub_category_id and sort:
                 q &= Q(sub_category_id=sub_category_id)
                 products = Product.objects.filter(q).order_by(sort)[offset:limit]
-
+            
             total = Product.objects.filter(q)
 
             if not products:
                 return JsonResponse({"MESSAGE": "해당 상품이 존재하지 않습니다."}, status=404)
-
-            if sub_category_id and sort:
-                q &= Q(sub_category_id=sub_category_id)
-                products = Product.objects.filter(q).order_by(sort)
 
             results = []
 
