@@ -6,7 +6,7 @@ from django.http      import JsonResponse
 
 from products.models import Product, Image, Stock, ProductTag, MainCategory, SubCategory, Tag
 
-PAGE = 8
+PAGE_SIZE = 8
 
 class ProductDetailView(View):
     def get(self, request, product_id):
@@ -45,26 +45,26 @@ class ProductListView(View):
             sort            = request.GET.get('sort-method', None)
             page            = int(request.GET.get('page', 1)) 
             
-            p_max  = page*PAGE
-            p_min  = p_max-PAGE
+            limit  = page*PAGE_SIZE
+            offset = limit-PAGE_SIZE
 
             q = Q()
             
             if category_id:
                 q &= Q(sub_category__maincategory_id=category_id)
-                products = Product.objects.filter(q)[p_min:p_max]
+                products = Product.objects.filter(q)[offset:limit]
 
             if sub_category_id:
                 q &= Q(sub_category_id=sub_category_id)
-                products = Product.objects.filter(q)[p_min:p_max]
+                products = Product.objects.filter(q)[offset:limit]
             
             if category_id and sort:
                 q &= Q(sub_category__maincategory_id=category_id)
-                products = Product.objects.filter(q).order_by(sort)[p_min:p_max]
+                products = Product.objects.filter(q).order_by(sort)[offset:limit]
 
             if sub_category_id and sort:
                 q &= Q(sub_category_id=sub_category_id)
-                products = Product.objects.filter(q).order_by(sort)[p_min:p_max]
+                products = Product.objects.filter(q).order_by(sort)[offset:limit]
 
             total = Product.objects.filter(q)
 
@@ -86,7 +86,7 @@ class ProductListView(View):
                         "product_tag"   : [{"new":tag.tag.new, "sale":tag.tag.sale, "best":tag.tag.best} for tag in tags]
                     }
                 )
-            return JsonResponse({"results": results, "total_counts" : len(total), "page_count": PAGE}, status=200) 
+            return JsonResponse({"results": results, "total_counts" : len(total), "page_count": PAGE_SIZE}, status=200) 
         except:
             return JsonResponse({"MESSAGE": "해당 상품이 존재하지 않습니다."}, status=404)
 
