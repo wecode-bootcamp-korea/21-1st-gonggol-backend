@@ -1,4 +1,5 @@
 import json
+from json.decoder import JSONDecodeError
 
 from django.views import View
 from django.http  import JsonResponse
@@ -10,30 +11,39 @@ from users.utils     import UserInfoDeco
 class OrderView(View):
     @UserInfoDeco
     def post(self, request):
-        user       = request.user
-        data       = json.loads(request.body)
-        size       = data['size']
-        quantity   = data['quantity']
-        product    = Product.objects.get(id=data['productId'])
-        status     = Status.objects.get(id=1)
-        cart, flag = Order.objects.get_or_create(user_id=user.id, status=status)
+        try:
+            user     = request.user
+            data     = json.loads(request.body)
+            size     = data['size']
+            quantity = data['quantity']
 
-        if OrderItem.objects.filter(order_id=cart.id, product_id=product.id, size=size).exists(): # 이미 CartItem에 동일 제품이 있다면 갯추만 증가
-            user_order           = OrderItem.objects.get(order_id=cart.id, product_id=product.id, size=size)
-            user_order.quantity += int(quantity)
-            user_order.save()
-            return JsonResponse({"message":"cart update success"}, status=200)
+            product = Product.objects.get(id=data['productId'])
+            status  = Status.objects.get(id=1)
 
-        OrderItem.objects.create(
+            cart, created = Order.objects.get_or_create(user_id=user.id, status=status)
+
+            if OrderItem.objects.filter(order_id=cart.id, product_id=product.id, size=size).exists():
+                user_order           = OrderItem.objects.get(order_id=cart.id, product_id=product.id, size=size)
+                user_order.quantity += int(quantity)
+                user_order.save()
+                return JsonResponse({"message" : "cart update success"}, status=200)
+
+            OrderItem.objects.create(
             order_id   = cart.id,
             product_id = product.id,
             size       = size,
             quantity   = quantity
             )
-        return JsonResponse({"message":"cart add success"}, status=200)
-
+            return JsonResponse({"message" : "cart add success"}, status=200)
+        except Product.DoesNotExist:
+            return JsonResponse({"message" : "INVALID_PRODUCT"}, status=400)
+        except KeyError:
+            return JsonResponse({"message" : "KEY_ERROR"}, status=400)
+        except JSONDecodeError:
+            return JsonResponse({'message':'DECODE_ERROR'}, status=400)
+            
     @UserInfoDeco
-    def get(self, request): # User의 장바구니 프론트단 전달
+    def get(self, request):
         try:
             user        = request.user
             order       = Order.objects.get(user_id=user.id)
@@ -55,7 +65,7 @@ class OrderView(View):
             return JsonResponse({"message" : "ORDER_DOSE_NOT_EXIST"}, status=400)
 
     @UserInfoDeco
-    def delete(self, request, productId): # 프론트로부터 입력받은 유저의 특정 제품, 장바구니에서 삭제
+    def delete(self, request, productId):
         try:
             user = request.user
 
