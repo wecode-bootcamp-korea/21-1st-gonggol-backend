@@ -60,7 +60,7 @@ class CartView(View):
     @UserInfoDeco
     def delete(self, request, productId): # 프론트로부터 입력받은 유저의 특정 제품, 장바구니에서 삭제
         try:
-            user    = request.user
+            user = request.user
 
             user_info = Order.objects.get(user_id=user.id)
             del_item  = user_info.cartitem_set.get(product_id = productId)
