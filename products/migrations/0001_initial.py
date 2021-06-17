@@ -78,8 +78,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('new', models.BooleanField(default=False)),
-                ('sale', models.BooleanField(default=False)),
                 ('best', models.BooleanField(default=False)),
+                ('sale', models.BooleanField(default=False)),
                 ('product', models.ManyToManyField(through='products.ProductTag', to='products.Product')),
             ],
             options={
