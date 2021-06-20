@@ -25,21 +25,21 @@
 ### 공통
 - a쿼리 툴을 이용한 모델링 작성
 ![](https://images.velog.io/images/cj4207/post/d22c1eea-541e-4acc-a60d-c7456c88124d/%E1%84%86%E1%85%A9%E1%84%83%E1%85%A6%E1%86%AF%E1%84%85%E1%85%B5%E1%86%BC.PNG)
-### 메인페이지
+### 메인페이지 (배찬영님)
 - 신상품, 베스트 상품 리스트 패스 파라미터로 value 받고 response ( 신상품, 베스트 임의 결정 )
-### 상품목록
+### 상품목록 (한성봉)
 - 카테고리 별, 상품 별 리스트 q객체 사용 조건을 추가하여 쿼리 파라미터로 value 받고 호출
 - 쿼리 파라미터로 offset, limit 지정하여 그 값으로 슬라이싱후 페이징 기능 구현
 - 쿼리 파라미터로 value 받고 order_by() 사용하여 정렬 기능 구현
 - tag를 이용해 True, False 값으로 신상품, 세일상품, 베스트 상품 response
-### 상품상세
+### 상품상세 (배찬영님)
 - 패스 파라미터로 product_id 값으로 데이터 response, 각 상품들의 size 재고, 가격, discount, image, image body response
-### 로그인 & 회원가입
+### 로그인 & 회원가입 (최승리님)
 - 회원가입 정규표현식을 활용한 입력항목 유효성 체크 구현
 - 회원가입 Bcrypt활용한 password 암호화 및 복호화 구현
 - 로그인 JWT를 활용한 token 발행 구현
 - Decorator를 활용한 회원 인가 구현
-### 장바구니
+### 장바구니 (최승리님)
 - Django 기초적인 CRUD 활용한 장바구니 생성, 추가, 삭제 구현
 - Login Decorator를 통한 회원정보 확인 구현
 ## Reference
