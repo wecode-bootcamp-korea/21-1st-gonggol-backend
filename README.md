@@ -10,6 +10,7 @@
 - 김지민
 - 오선주
 - 이도윤
+#### <a href ="https://github.com/wecode-bootcamp-korea/21-1st-gonggol-frontend">[프론트엔드 Github 링크]</a>
 ### Backend (3명)
 - 배찬영
 - 최승리
