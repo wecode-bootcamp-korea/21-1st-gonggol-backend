@@ -1,37 +1,49 @@
 from rest_framework import serializers
 from rest_framework.relations import StringRelatedField
 
-from .models import Product, ProductTag, SubCategory, Image
+from .models import Product, ProductTag, MainCategory, SubCategory, Image, Tag
+
+class MainCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MainCategory
+        fields = ['id', 'name']
   
 class SubCategorySerializer(serializers.ModelSerializer):
+    maincategory = MainCategorySerializer(many=False, read_only=True)
     
     class Meta:
         model  = SubCategory
-        fields = '__all__'
+        fields = ['id', 'name', 'maincategory']
 
 class ImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model  = Image
+        fields = ['url']
+
+
+class TagSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Tag
         fields = '__all__'
 
 class ProductTagSerializer(serializers.ModelSerializer):
+    tag = TagSerializer(many=False, read_only=True)
     
     class Meta:
         model = ProductTag
-        fields = '__all__'
+        fields = ['tag', 'product']
 
 class ProductSerializer(serializers.ModelSerializer):
-    # sub_category = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
-    # image_set    = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    # sub_category     = SubCategorySerializer(many=False, read_only=True)
-    # image_set        = ImageSerializer(many=True, read_only=True)
-    # product_tags_set = ProductTagSerializer(many=True, read_only=True)
+    image_set      = ImageSerializer(many=True, read_only=True)
+    producttag_set = ProductTagSerializer(many=True, read_only=True)
+    sub_category   = SubCategorySerializer(many=False, read_only=True)
 
     class Meta:
         model  = Product
-        fields = '__all__'
-        # depth = 1
+        fields = ['id', 'name', 'price', 'discount', 'producttag_set', 'image_set', 'sub_category']
+
 
 ######################################
 

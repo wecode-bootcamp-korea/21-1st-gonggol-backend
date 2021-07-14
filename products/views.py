@@ -12,20 +12,20 @@ from django.http      import Http404
 from products.models      import Product, Image, Stock, ProductTag, MainCategory, SubCategory, Tag
 from products.serializers import ProductSerializer
 
-PAGE_SIZE = 10
+PAGE_SIZE = 8
 # DRF APIView
 class ProductAPIView(APIView):
     def get(self, request):
         category_id     = request.GET.get('categoryId', None)
         sub_category_id = request.GET.get('subcategoryId', None)
         sort            = request.GET.get('sort-method', None)
-        page            = int(request.GET.get('page', 1)) 
+        page            = int(request.GET.get('page', 1))
 
         limit  = page*PAGE_SIZE
         offset = limit-PAGE_SIZE
 
         q = Q()
-        
+
         if category_id:
             q &= Q(sub_category__maincategory_id=category_id)
             products = Product.objects.filter(q)[offset:limit]
@@ -44,7 +44,7 @@ class ProductAPIView(APIView):
         
         # total = Product.objects.filter(q)
 
-        products    = Product.objects.filter(q)
+        # products    = Product.objects.filter(q)
         serializers = ProductSerializer(products, many=True)
 
         return Response(serializers.data)
@@ -60,17 +60,13 @@ class ProductAPIView(APIView):
 ## DRF APIDetailView
 class ProductAPIDetailView(APIView):
     def get(self, request, product_id):
-        product     = Product.objects.get(id=product_id)
-        images      = Image.objects.filter(product_id=product.id)
-        tags        = ProductTag.objects.filter(product_id=product.id)
-        size_stocks = Stock.objects.filter(product_id=product.id)
-
         product     = Product.objects.get(pk=product_id)
         serializers = ProductSerializer(product)
+        
         return Response(serializers.data)
 
-    def put(self, request, pk):
-        product     = Product.objects.get(pk=pk)
+    def put(self, request, product_id):
+        product     = Product.objects.get(pk=product_id)
         serializers = ProductSerializer(
             product,
             data = request.data
@@ -81,8 +77,8 @@ class ProductAPIDetailView(APIView):
             return Response(serializers.data)
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
-        product = Product.objects.get(pk=pk)
+    def delete(self, request, product_id):
+        product = Product.objects.get(pk=product_id)
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
