@@ -44,7 +44,7 @@ class ProductAPIView(APIView):
         
         # total = Product.objects.filter(q)
 
-        # products    = Product.objects.filter(q)
+        products    = Product.objects.filter(q)
         serializers = ProductSerializer(products, many=True)
 
         return Response(serializers.data)
